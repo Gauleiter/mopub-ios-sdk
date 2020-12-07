@@ -18,7 +18,6 @@
 #import <sys/sysctl.h>
 
 BOOL MPViewHasHiddenAncestor(UIView *view);
-UIWindow *MPViewGetParentWindow(UIView *view);
 BOOL MPViewIntersectsParentWindow(UIView *view);
 NSString *MPSHA1Digest(NSString *string);
 
@@ -142,43 +141,43 @@ BOOL MPViewHasHiddenAncestor(UIView *view)
     return NO;
 }
 
-UIWindow *MPViewGetParentWindow(UIView *view)
-{
-    UIView *ancestor = view.superview;
-    while (ancestor) {
-        if ([ancestor isKindOfClass:[UIWindow class]]) {
-            return (UIWindow *)ancestor;
-        }
-        ancestor = ancestor.superview;
-    }
-    return nil;
-}
-
 BOOL MPViewIntersectsParentWindow(UIView *view)
 {
-    UIWindow *parentWindow = MPViewGetParentWindow(view);
+    id<UICoordinateSpace> sceneCoordinateSpace;
+    if (@available(iOS 13, *)) {
+        sceneCoordinateSpace = view.window.windowScene.coordinateSpace;
+    } else {
+        sceneCoordinateSpace = view.window.screen.coordinateSpace;
+    }
 
-    if (parentWindow == nil) {
+    if (sceneCoordinateSpace == nil) {
         return NO;
     }
 
-    // We need to call convertRect:toView: on this view's superview rather than on this view itself.
-    CGRect viewFrameInWindowCoordinates = [view.superview convertRect:view.frame toView:parentWindow];
+    // We need to call convertRect:toCoordinateSpace: on this view's superview rather than on this view itself.
+    CGRect viewFrameInSceneCoordinates = [view.superview convertRect:view.frame
+                                                   toCoordinateSpace:sceneCoordinateSpace];
 
-    return CGRectIntersectsRect(viewFrameInWindowCoordinates, parentWindow.frame);
+    return CGRectIntersectsRect(viewFrameInSceneCoordinates, view.window.frame);
 }
 
 BOOL MPViewIntersectsParentWindowWithPercent(UIView *view, CGFloat percentVisible)
 {
-    UIWindow *parentWindow = MPViewGetParentWindow(view);
+    id<UICoordinateSpace> sceneCoordinateSpace;
+    if (@available(iOS 13, *)) {
+        sceneCoordinateSpace = view.window.windowScene.coordinateSpace;
+    } else {
+        sceneCoordinateSpace = view.window.screen.coordinateSpace;
+    }
 
-    if (parentWindow == nil) {
+    if (sceneCoordinateSpace == nil) {
         return NO;
     }
 
-    // We need to call convertRect:toView: on this view's superview rather than on this view itself.
-    CGRect viewFrameInWindowCoordinates = [view.superview convertRect:view.frame toView:parentWindow];
-    CGRect intersection = CGRectIntersection(viewFrameInWindowCoordinates, parentWindow.frame);
+    // We need to call convertRect:toCoordinateSpace: on this view's superview rather than on this view itself.
+    CGRect viewFrameInSceneCoordinates = [view.superview convertRect:view.frame
+                                                   toCoordinateSpace:sceneCoordinateSpace];
+    CGRect intersection = CGRectIntersection(viewFrameInSceneCoordinates, view.window.frame);
 
     CGFloat intersectionArea = CGRectGetWidth(intersection) * CGRectGetHeight(intersection);
     CGFloat originalArea = CGRectGetWidth(view.bounds) * CGRectGetHeight(view.bounds);
