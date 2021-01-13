@@ -134,13 +134,15 @@ static NSString * const kAdResonsesContentKey = @"content";
         return;
     }
 
+    __typeof__(self) __weak weakSelf = self;
+
     for (NSURL * beforeLoadURL in configuration.beforeLoadURLs) {
         MPURLRequest * request = [MPURLRequest requestWithURL:beforeLoadURL];
         if (request == nil) {
             continue;
         }
         [MPHTTPNetworkSession startTaskWithHttpRequest:request responseHandler:^(NSData * _Nonnull data, NSHTTPURLResponse * _Nonnull response) {
-            MPLogDebug(@"Successfully sent before load URL: %@", beforeLoadURL);
+            MPLogDebug1(weakSelf, @"Successfully sent before load URL: %@", beforeLoadURL);
         } errorHandler:^(NSError * _Nonnull error) {
             MPLogInfo(@"Failed to send before load URL: %@", beforeLoadURL);
         }];
@@ -153,15 +155,17 @@ static NSString * const kAdResonsesContentKey = @"content";
 {
     NSArray * afterLoadUrls = [configuration afterLoadUrlsWithLoadDuration:duration loadResult:result];
 
+    __typeof__(self) __weak weakSelf = self;
+
     for (NSURL * afterLoadUrl in afterLoadUrls) {
         MPURLRequest * request = [MPURLRequest requestWithURL:afterLoadUrl];
         if (request == nil) {
             continue;
         }
         [MPHTTPNetworkSession startTaskWithHttpRequest:request responseHandler:^(NSData * _Nonnull data, NSHTTPURLResponse * _Nonnull response) {
-            MPLogDebug(@"Successfully sent after load URL: %@", afterLoadUrl);
+            MPLogDebug1(weakSelf, @"Successfully sent after load URL: %@", afterLoadUrl);
         } errorHandler:^(NSError * _Nonnull error) {
-            MPLogDebug(@"Failed to send after load URL: %@", afterLoadUrl);
+            MPLogDebug1(weakSelf, @"Failed to send after load URL: %@", afterLoadUrl);
         }];
     }
 }

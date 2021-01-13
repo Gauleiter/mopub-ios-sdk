@@ -57,6 +57,8 @@
     __block NSMutableDictionary *result = [NSMutableDictionary new];
     __block NSMutableArray *errors = nil;
 
+    __typeof__(self) __weak weakSelf = self;
+
     for (NSURL *imageURL in imageURLs) {
         [self.imageDownloadQueue addOperationWithBlock:^{
             @autoreleasepool {
@@ -65,7 +67,7 @@
                     UIImage *image = [MPImageCreator imageWith:imageData];
                     result[imageURL] = image;
                 } else if (![[MPNativeCache sharedCache] cachedDataExistsForKey:imageURL.absoluteString] || !useCachedImage) {
-                    MPLogDebug(@"Downloading %@", imageURL);
+                    MPLogDebug1(weakSelf, @"Downloading %@", imageURL);
 
                     __block NSError *error = nil;
                     __block NSData *data = nil;
@@ -89,7 +91,7 @@
                             result[imageURL] = downloadedImage;
                         } else {
                             if (downloadedImage == nil) {
-                                MPLogDebug(@"Error: invalid image data downloaded");
+                                MPLogDebug1(weakSelf, @"Error: invalid image data downloaded");
                             }
 
                             validImageDownloaded = NO;

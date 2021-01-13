@@ -17,6 +17,7 @@ extern NSString * const kMPClearErrorLogFormatWithAdUnitID;
 extern NSString * const kMPWarmingUpErrorLogFormatWithAdUnitID;
 
 #define MPLogDebug(...) [MPLogging logEvent:[MPLogEvent eventWithMessage:[NSString stringWithFormat:__VA_ARGS__] level:MPBLogLevelDebug] source:nil fromClass:self.class]
+#define MPLogDebug1(weakSelf, ...) [MPLogging logEvent:[MPLogEvent eventWithMessage:[NSString stringWithFormat:__VA_ARGS__] level:MPBLogLevelDebug] source:nil fromClass:weakSelf.class]
 #define MPLogInfo(...) [MPLogging logEvent:[MPLogEvent eventWithMessage:[NSString stringWithFormat:__VA_ARGS__] level:MPBLogLevelInfo] source:nil fromClass:self.class]
 
 // MPLogTrace, MPLogWarn, MPLogError, and MPLogFatal will be deprecated in

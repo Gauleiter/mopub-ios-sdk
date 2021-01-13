@@ -653,7 +653,7 @@ static NSString * const kDeprecatedIfaPrefixToRemove = @"ifa:";
  */
 - (MPTimer * _Nonnull)newNextUpdateTimer {
     __typeof__(self) __weak weakSelf = self;
-    MPTimer * timer = [MPTimer timerWithTimeInterval:self.syncFrequency repeats:YES block:^(MPTimer * _Nonnull timer) {
+    MPTimer * timer = [MPTimer timerWithTimeInterval:self.syncFrequency repeats:NO block:^(MPTimer * _Nonnull timer) {
         __typeof__(self) strongSelf = weakSelf;
         [strongSelf onNextUpdateFiredWithTimer];
     }];

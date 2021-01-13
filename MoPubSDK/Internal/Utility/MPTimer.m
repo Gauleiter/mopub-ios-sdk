@@ -63,12 +63,12 @@
 
             // Extra validation for the timer callback block.
             if (strongSelf.timerCallbackBlock == nil) {
-                MPLogDebug(@"%s `timerCallbackBlock` is unexpectedly nil. Return early to avoid crash.", __FUNCTION__);
+                MPLogDebug1(strongSelf, @"%s `timerCallbackBlock` is unexpectedly nil. Return early to avoid crash.", __FUNCTION__);
                 return;
             }
 
             // Forward the callback along
-            strongSelf.timerCallbackBlock(self);
+            strongSelf.timerCallbackBlock(strongSelf);
         }];
         [_timer setFireDate:NSDate.distantFuture];
 
